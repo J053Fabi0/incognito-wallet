@@ -47,6 +47,7 @@ export const mappingData = (dataMasterAddress, dataStakerInfo) => {
   const currentRewardRate = staked
     ? dataStakerInfo?.RewardRate
     : dataMasterAddress?.CurrentRewardRate || defaultRewardRate;
+  const currentCompoundRate = dataMasterAddress?.CurrentCompoundRate || 57;
   const shouldCalInterestRate = staked;
   // balanceToHumanAmount >= minToStakeToHunmanAmount;
   const pendingBalance = dataStakerInfo?.PendingBalance || 0;
@@ -56,6 +57,7 @@ export const mappingData = (dataMasterAddress, dataStakerInfo) => {
     minToStake: minToStake,
     minToWithdraw: 1,
     currentRewardRate,
+    currentCompoundRate,
     stakingMasterAddress: dataMasterAddress?.StakingMasterAddress || '',
     balance,
     rewardDate: dataStakerInfo?.RewardDate || '',
