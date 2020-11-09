@@ -22,7 +22,7 @@ ScrollView.defaultProps = {
 
 ScrollView.propTypes = {
   style: PropTypes.object,
-  contentContainerStyle: PropTypes.object,
+  contentContainerStyle: PropTypes.any,
   paddingBottom: PropTypes.bool,
 };
 

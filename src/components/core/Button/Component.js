@@ -110,7 +110,10 @@ Button.propTypes = {
   ]),
   buttonStyle: PropTypes.object,
   textContainerStyle: PropTypes.object,
-  titleStyle: PropTypes.object,
+  titleStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+  ]),
   title: PropTypes.string,
   children: PropTypes.oneOfType([
     PropTypes.node,

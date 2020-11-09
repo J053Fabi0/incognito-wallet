@@ -32,7 +32,7 @@ const AppScreen = ({ children }) => {
 };
 
 AppScreen.propTypes = {
-  children: PropTypes.oneOfType([ PropTypes.element, PropTypes.arrayOf(PropTypes.element) ]).isRequired
+  children: PropTypes.any.isRequired
 };
 
 export default AppScreen;

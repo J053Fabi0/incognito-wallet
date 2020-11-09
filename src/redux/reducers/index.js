@@ -27,6 +27,7 @@ import pin from './pin';
 import globalReducer from './globalReducer';
 import receivers from './receivers';
 import settings from './settings';
+import masterKey from './masterKey';
 
 const rootReducer = reduceReducers(
   combineReducers({
@@ -55,7 +56,8 @@ const rootReducer = reduceReducers(
     dev,
     streamline,
     txHistoryDetail,
-    node
+    node,
+    masterKey,
   }),
   globalReducer,
 );

@@ -67,7 +67,10 @@ BtnLinear.defaultProps = {
 
 BtnLinear.propTypes = {
   title: PropTypes.string,
-  titleStyle: PropTypes.any,
+  titleStyle: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+  ]),
   btnStyle: PropTypes.any,
   disabled: PropTypes.bool,
   loading: PropTypes.bool,

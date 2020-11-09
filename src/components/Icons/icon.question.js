@@ -16,8 +16,13 @@ const QuestionIcon = props => {
 };
 
 QuestionIcon.propTypes = {
-  icon: PropTypes.string,
+  icon: PropTypes.any,
   style: PropTypes.any,
+};
+
+QuestionIcon.defaultProps = {
+  icon: undefined,
+  style: undefined,
 };
 
 export default QuestionIcon;

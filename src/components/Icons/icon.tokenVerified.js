@@ -33,7 +33,7 @@ TokenVerified.defaultProps = {
 TokenVerified.propTypes = {
   style: PropTypes.object,
   containerStyled: PropTypes.object,
-  sourceIcon: PropTypes.string,
+  sourceIcon: PropTypes.any,
 };
 
 export default TokenVerified;

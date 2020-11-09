@@ -110,4 +110,20 @@ export default {
   TxHistoryReceive: 'TxHistoryReceive',
   Event: 'Event',
   Helper: 'Helper'
+
+  // Master keys
+  MasterKeys: 'MasterKeys',
+  ImportMasterKey: 'ImportMasterKey',
+  InitMasterKey: 'InitMasterKey',
+  CreateMasterKey: 'CreateMasterKey',
+  InitMasterKeyPhrase: 'MasterKeyPhrase',
+  MasterKeyPhrase: 'MasterKeyPhrase',
+  InitVerifyPassphrase: 'InitVerifyPassphrase',
+  VerifyPassphrase: 'VerifyPassphrase',
+  ImportKeyChainWarning: 'ImportKeyChainWarning',
+  KeysExplained: 'KeysExplained',
+
+  ManageStorage: 'ManageStorage',
+  BackUpAllData: 'BackUpAllData',
+  RestoreAllData: 'RestoreAllData',
 };

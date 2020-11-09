@@ -3,7 +3,6 @@ import { Toast } from '@src/components/core';
 import React from 'react';
 import { CustomError, ErrorCode, ExHandler } from '@src/services/exception';
 import { compose } from 'recompose';
-import { withLayout_2 } from '@src/components/Layout';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import trim from 'lodash/trim';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +15,7 @@ import { actionFetchImportAccount } from '@src/redux/actions/account';
 import {
   actionClearListNodes as clearListNodes
 } from '@screens/Node/Node.actions';
+import routeNames from '@routers/routeNames';
 import { formImportAccount } from './ImportAccount';
 
 const enhance = (WrappedComponent) => (props) => {
@@ -34,6 +34,7 @@ const enhance = (WrappedComponent) => (props) => {
     getPrivateKeyValidator,
     isAccountExist,
     isPrivateKeyExist,
+    isAccountExistInMasterKeys,
   } = useAccount({
     form: formImportAccount,
   });
@@ -51,7 +52,7 @@ const enhance = (WrappedComponent) => (props) => {
       if (disabledForm) {
         return;
       }
-      if (isAccountExist || isPrivateKeyExist) {
+      if (isAccountExist || isPrivateKeyExist || isAccountExistInMasterKeys) {
         throw new CustomError(ErrorCode.importAccount_existed);
       }
       const isImported = await dispatch(
@@ -79,6 +80,9 @@ const enhance = (WrappedComponent) => (props) => {
       ).showErrorToast();
     }
   };
+  const handleImportMasterKey = () => {
+    navigation.navigate(routeNames.ImportMasterKey, { redirect: routeNames.Keychain });
+  };
   const handleChangeRandomName = async () => {
     await dispatch(
       change(
@@ -100,6 +104,7 @@ const enhance = (WrappedComponent) => (props) => {
         getAccountValidator,
         getPrivateKeyValidator,
         handleImportAccount,
+        handleImportMasterKey,
         genRandomName,
         toggle,
         randomName,
@@ -113,6 +118,5 @@ const enhance = (WrappedComponent) => (props) => {
 };
 
 export default compose(
-  withLayout_2,
   enhance,
 );

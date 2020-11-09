@@ -1,12 +1,11 @@
 import 'react-native-gesture-handler';
+import 'react-native-get-random-values';
 import '@src/services/polyfill';
 import _ from 'lodash';
-// import AppTemp from '@src/Temp';
-import {AppRegistry} from 'react-native';
+import { AppRegistry } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import {name as appName} from './app.json';
+import { name as appName } from './app.json';
 
-const TAG = 'index';
 global.isMainnet = true;
 console.disableYellowBox = true;
 

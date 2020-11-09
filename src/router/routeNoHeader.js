@@ -67,6 +67,59 @@ import WhyStreamline from '@screens/Streamline/features/WhyStreamLine';
 import TxHistoryReceive from '@screens/Wallet/features/TxHistoryReceive';
 import Event from '@screens/Event';
 import Helper from '@screens/Helper/Helper';
+import {
+  CreateMasterKey,
+  ImportMasterKey,
+  KeysExplained,
+  MasterKeyList,
+  Passphrase,
+  VerifyPassPhrase
+} from '@screens/BackUpPassphrase';
+import ManageStorage from '@screens/ManageStorage';
+import BackUpAllData from '@screens/BackUpAllData';
+import RestoreAll from '@screens/RestoreAllData';
+
+const masterKeyRoutes = [
+  {
+    screen: MasterKeyList,
+    name: routeNames.MasterKeys,
+  },
+  {
+    screen: ImportMasterKey,
+    name: routeNames.ImportMasterKey,
+  },
+  {
+    screen: CreateMasterKey,
+    name: routeNames.CreateMasterKey,
+  },
+  {
+    screen: Passphrase,
+    name: routeNames.MasterKeyPhrase,
+  },
+  {
+    screen: VerifyPassPhrase,
+    name: routeNames.VerifyPassphrase,
+  },
+  {
+    screen: KeysExplained,
+    name: routeNames.KeysExplained,
+  },
+];
+
+const devRoutes = [
+  {
+    screen: ManageStorage,
+    name: routeNames.ManageStorage,
+  },
+  {
+    screen: BackUpAllData,
+    name: routeNames.BackUpAllData,
+  },
+  {
+    screen: RestoreAll,
+    name: routeNames.RestoreAllData,
+  },
+];
 
 const routes = [
   {
@@ -349,6 +402,8 @@ const routes = [
     screen: Helper,
     name: routeNames.Helper,
   },
+  ...masterKeyRoutes,
+  ...devRoutes,
 ];
 
 export const getRoutesNoHeader = () =>

@@ -24,7 +24,7 @@ BtnQRCode.defaultProps = {
 };
 
 BtnQRCode.propTypes = {
-  source: PropTypes.string,
+  source: PropTypes.any,
 };
 
 export default BtnQRCode;
