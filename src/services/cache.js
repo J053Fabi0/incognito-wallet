@@ -66,3 +66,8 @@ export const clearCache = (key) => {
   }
   return delete caches[key];
 };
+
+export const clearAllCaches = () => {
+  Object.keys(caches)
+    .forEach(key => delete caches[key]);
+};

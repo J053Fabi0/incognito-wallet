@@ -15,6 +15,7 @@ import { masterKeysSelector, masterlessKeyChainSelector } from '@src/redux/selec
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import _ from 'lodash';
 import { compareTextLowerCase } from '@utils/compare';
+import { clearAllCaches } from '@services/cache';
 
 const DEFAULT_MASTER_KEY = new MasterKeyModel({
   name: 'Wallet',
@@ -81,9 +82,6 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
   defaultMasterKey.mnemonic = wallet.Mnemonic;
   defaultMasterKey.wallet = wallet;
 
-  await dispatch(followDefaultTokenForWallet(wallet));
-  await dispatch(followDefaultTokenForWallet(masterlessWallet));
-
   await saveWallet(wallet);
   await saveWallet(masterlessWallet);
 
@@ -91,6 +89,9 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
 
   await storeWalletAccountIdsOnAPI(wallet);
   await dispatch(initMasterKeySuccess(masterKeys));
+
+  await dispatch(followDefaultTokenForWallet(wallet));
+  await dispatch(followDefaultTokenForWallet(masterlessWallet));
 };
 
 const loadAllMasterKeysSuccess = (data) => ({
@@ -149,6 +150,8 @@ const switchMasterKeySuccess = (data) => ({
 });
 
 export const switchMasterKey = (name) => async (dispatch, getState) => {
+  clearAllCaches();
+
   await dispatch(switchMasterKeySuccess(name));
   await dispatch(reloadWallet());
   dispatch(reloadBalance());
