@@ -132,7 +132,6 @@ const enhance = (WrappedComp) => (props) => {
       dispatch(getInternalTokenList());
       const [servers] = await new Promise.all([
         serverService.get(),
-        dispatch(getPTokenList()),
         dispatch(loadPin()),
         dispatch(actionFetchProfile()),
         getFunctionConfigs().catch(e => e),
@@ -158,6 +157,7 @@ const enhance = (WrappedComp) => (props) => {
 
   React.useEffect(() => {
     requestAnimationFrame(async () => {
+      await dispatch(getPTokenList());
       await dispatch(loadAllMasterKeys());
       setLoadMasterKeys(true);
     });

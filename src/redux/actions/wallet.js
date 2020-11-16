@@ -64,7 +64,7 @@ export const reloadWallet = () => async (dispatch, getState) => {
     let defaultAccount = accountSeleclor.defaultAccount(state);
 
     if (wallet) {
-      dispatch(setWallet(wallet));
+      await dispatch(setWallet(wallet));
 
       const accounts = await loadListAccount(wallet);
 
@@ -77,7 +77,7 @@ export const reloadWallet = () => async (dispatch, getState) => {
         }
       }
 
-      dispatch(setListAccount(accounts));
+      await dispatch(setListAccount(accounts));
 
       if (!defaultAccount) {
         const defaultAccountName = await getStoredDefaultAccountName(accounts);

@@ -90,8 +90,14 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
   await storeWalletAccountIdsOnAPI(wallet);
   await dispatch(initMasterKeySuccess(masterKeys));
 
-  await dispatch(followDefaultTokenForWallet(wallet));
+  await dispatch(switchMasterKey(masterlessMasterKey.name));
   await dispatch(followDefaultTokenForWallet(masterlessWallet));
+
+  await dispatch(switchMasterKey(defaultMasterKey.name));
+  await dispatch(followDefaultTokenForWallet(wallet));
+
+  await saveWallet(wallet);
+  await saveWallet(masterlessWallet);
 };
 
 const loadAllMasterKeysSuccess = (data) => ({
