@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 import Performance from '@screens/Performance';
 import { devSelector } from '@screens/Dev';
 import { CONSTANT_KEYS } from '@src/constants';
+import AppUpdater from '@components/AppUpdater';
 import { MAIN_WEBSITE } from './constants/config';
 import LocalDatabase from './utils/LocalDatabase';
 import ModalConnection from './components/Modal/ModalConnection';
@@ -138,6 +139,7 @@ export const AppWrapper = (props) => () => {
             onPressOk={() => listenNetworkChanges()}
           />
         </AppScreen>
+        <AppUpdater />
       </PersistGate>
     </Provider>
   );
