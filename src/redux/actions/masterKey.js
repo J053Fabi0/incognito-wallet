@@ -76,8 +76,11 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
   const masterlessMasterKey = new MasterKeyModel(MASTERLESS);
   const masterlessWallet = await masterlessMasterKey.loadWallet();
 
+  masterlessWallet.MasterAccount.child = [];
+
   defaultMasterKey.name = masterKeyName;
   const wallet = await importWallet(mnemonic, defaultMasterKey.getStorageName());
+  await syncServerAccounts(wallet);
 
   defaultMasterKey.mnemonic = wallet.Mnemonic;
   defaultMasterKey.wallet = wallet;
@@ -89,9 +92,6 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
 
   await storeWalletAccountIdsOnAPI(wallet);
   await dispatch(initMasterKeySuccess(masterKeys));
-
-  await dispatch(switchMasterKey(masterlessMasterKey.name));
-  await dispatch(followDefaultTokenForWallet(masterlessWallet));
 
   await dispatch(switchMasterKey(defaultMasterKey.name));
   await dispatch(followDefaultTokenForWallet(wallet));
@@ -196,6 +196,22 @@ const importMasterKeySuccess = (newMasterKey) => ({
   payload: newMasterKey,
 });
 
+const syncServerAccounts = async (wallet) => {
+  const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
+  const accounts = await getWalletAccounts(masterAccountInfo.PublicKeyCheckEncode);
+
+  if (accounts.length > 0) {
+    wallet.MasterAccount.child = [];
+    for (const account of accounts) {
+      try {
+        await wallet.importAccountWithId(account.id, account.name);
+      } catch {
+        //
+      }
+    }
+  }
+};
+
 const syncUnlinkWithNewMasterKey = (newMasterKey) => async (dispatch, getState) => {
   const state = getState();
   const masterless = masterlessKeyChainSelector(state);
@@ -246,19 +262,7 @@ export const importMasterKey = (data) => async (dispatch) => {
     ...data,
   });
   const wallet = await importWallet(data.mnemonic, newMasterKey.getStorageName());
-  const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
-  const accounts = await getWalletAccounts(masterAccountInfo.PublicKeyCheckEncode);
-
-  if (accounts.length > 0) {
-    wallet.MasterAccount.child = [];
-    for (const account of accounts) {
-      try {
-        await wallet.importAccountWithId(account.id, account.name);
-      } catch {
-        //
-      }
-    }
-  }
+  await syncServerAccounts(wallet);
 
   newMasterKey.wallet = wallet;
   newMasterKey.mnemonic = wallet.Mnemonic;

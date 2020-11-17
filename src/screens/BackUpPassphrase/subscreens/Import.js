@@ -5,7 +5,7 @@ import MainLayout from '@components/MainLayout';
 import Input from '@screens/BackUpPassphrase/components/Input';
 import Button from '@screens/BackUpPassphrase/components/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { importMasterKey } from '@src/redux/actions/masterKey';
+import { importMasterKey, initMasterKey } from '@src/redux/actions/masterKey';
 import routeNames from '@routers/routeNames';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import { BtnScanQrCode } from '@components/Button/index';
@@ -37,6 +37,7 @@ const ImportMasterKey = () => {
   const navigation = useNavigation();
   const redirect = useNavigationParam('redirect');
   const masterKeys = useSelector(masterKeysSelector);
+  const isInit = useNavigationParam('init');
 
   const [name, setName] = useState('');
   const [phrase, setPhrase] = useState('');
@@ -61,13 +62,18 @@ const ImportMasterKey = () => {
 
   const handleImport = useCallback(_.debounce(async (trimmedPhrase, trimmedName, masterKeys) => {
     try {
-      validateMnemonicWithOtherKeys(trimmedPhrase, masterKeys);
-      validateName(trimmedName, masterKeys);
-      await dispatch(importMasterKey({
-        name: trimmedName,
-        mnemonic: trimmedPhrase.replace(/typical/g, '\ttypical'),
-      }));
-      navigation.navigate(redirect || routeNames.MasterKeys);
+      if (!isInit) {
+        validateMnemonicWithOtherKeys(trimmedPhrase, masterKeys);
+        validateName(trimmedName, masterKeys);
+        await dispatch(importMasterKey({
+          name: trimmedName,
+          mnemonic: trimmedPhrase,
+        }));
+        navigation.navigate(redirect || routeNames.MasterKeys);
+      } else {
+        await dispatch(initMasterKey(trimmedName, trimmedPhrase));
+        navigation.goBack();
+      }
     } catch (e) {
       setError(e.message);
     } finally {

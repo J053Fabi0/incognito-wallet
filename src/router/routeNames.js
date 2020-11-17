@@ -109,19 +109,21 @@ export default {
   WhyStreamline: 'WhyStreamline',
   TxHistoryReceive: 'TxHistoryReceive',
   Event: 'Event',
-  Helper: 'Helper'
+  Helper: 'Helper',
 
   // Master keys
   MasterKeys: 'MasterKeys',
   ImportMasterKey: 'ImportMasterKey',
-  InitMasterKey: 'InitMasterKey',
   CreateMasterKey: 'CreateMasterKey',
-  InitMasterKeyPhrase: 'MasterKeyPhrase',
   MasterKeyPhrase: 'MasterKeyPhrase',
-  InitVerifyPassphrase: 'InitVerifyPassphrase',
   VerifyPassphrase: 'VerifyPassphrase',
   ImportKeyChainWarning: 'ImportKeyChainWarning',
   KeysExplained: 'KeysExplained',
+
+  InitMasterKey: 'InitMasterKey',
+  InitVerifyPassphrase: 'InitVerifyPassphrase',
+  InitMasterKeyPhrase: 'MasterKeyPhrase',
+  InitImportMasterKey: 'InitImportMasterKey',
 
   ManageStorage: 'ManageStorage',
   BackUpAllData: 'BackUpAllData',

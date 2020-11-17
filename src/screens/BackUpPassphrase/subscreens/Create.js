@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, BackHandler } from 'react-native';
+import { StyleSheet } from 'react-native';
 import MainLayout from '@components/MainLayout/index';
 import Input from '@screens/BackUpPassphrase/components/Input';
 import Button from '@screens/BackUpPassphrase/components/Button';
@@ -66,10 +66,6 @@ const CreateMasterKey = () => {
   };
 
   const handleBack = () => {
-    if (isInit) {
-      return true;
-    }
-
     navigation.goBack();
   };
 
@@ -80,7 +76,6 @@ const CreateMasterKey = () => {
   return (
     <MainLayout
       header="Create master key"
-      hideBackButton={isInit}
       scrollable
       onGoBack={handleBack}
     >

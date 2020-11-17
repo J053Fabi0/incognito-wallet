@@ -17,11 +17,7 @@ import BtnInfo from './BtnInfo';
 
 const styled = StyleSheet.create({
   extra: {
-    flex: 1,
     paddingHorizontal: 25,
-  },
-  wrapper: {
-    flex: 1,
   },
 });
 
@@ -77,19 +73,17 @@ const Keychain = () => {
       customHeaderTitle={<BtnInfo />}
       noPadding
     >
-      <View style={styled.wrapper}>
-        <AccountSection
-          devices={devices}
-          label={isMasterless ? 'Masterless keychains' : 'Your keychains'}
-        />
-        <View style={styled.extra}>
-          {sectionItemFactories.map((item) => (
-            <SectionItem
-              data={item}
-              key={item.title}
-            />
-          ))}
-        </View>
+      <AccountSection
+        devices={devices}
+        label={isMasterless ? 'Masterless keychains' : 'Your keychains'}
+      />
+      <View style={styled.extra}>
+        {sectionItemFactories.map((item) => (
+          <SectionItem
+            data={item}
+            key={item.title}
+          />
+        ))}
       </View>
     </MainLayout>
   );

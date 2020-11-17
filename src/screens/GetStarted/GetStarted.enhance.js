@@ -21,6 +21,7 @@ import { KEYS } from '@src/constants/keys';
 import { getFunctionConfigs } from '@services/api/misc';
 import { loadAllMasterKeyAccounts, loadAllMasterKeys } from '@src/redux/actions/masterKey';
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
+import Welcome from '@screens/GetStarted/Welcome';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,
@@ -168,10 +169,6 @@ const enhance = (WrappedComp) => (props) => {
       return;
     }
 
-    if (masterKeys.length === 0) {
-      navigation.navigate(routeNames.InitMasterKey, { init: true });
-    }
-
     if (masterKeys.length) {
       initApp();
     }
@@ -180,6 +177,7 @@ const enhance = (WrappedComp) => (props) => {
   useFocusEffect(
     React.useCallback(() => {
       if (
+        masterKeys?.length > 0 &&
         !isInitialing && //init app success
         !isCreating && //created wallet
         isMigrated && //migrate old data success
@@ -195,15 +193,21 @@ const enhance = (WrappedComp) => (props) => {
           navigation.navigate(routeNames.Home);
         }
       }
-    }, [isInitialing, isCreating, isMigrated, isFetched, errorMsg]),
+    }, [masterKeys, isInitialing, isCreating, isMigrated, isFetched, errorMsg]),
   );
 
-  if (isMigrating) {
+  if (isMigrating || !loadMasterKeys) {
     return <LoadingContainer size="large" />;
   }
+
   if (isFetching) {
     return <Wizard />;
   }
+
+  if (masterKeys.length === 0) {
+    return <Welcome />;
+  }
+
   return (
     <ErrorBoundary>
       <WrappedComp
