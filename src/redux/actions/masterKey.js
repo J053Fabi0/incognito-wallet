@@ -70,13 +70,15 @@ const followDefaultTokenForWallet = (wallet) => async (dispatch, getState) => {
 
 export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
   await updateNetwork();
-  await migrateData();
+  const isMigrated = await migrateData();
 
   const defaultMasterKey = new MasterKeyModel(DEFAULT_MASTER_KEY);
   const masterlessMasterKey = new MasterKeyModel(MASTERLESS);
   const masterlessWallet = await masterlessMasterKey.loadWallet();
 
-  masterlessWallet.MasterAccount.child = [];
+  if (!isMigrated) {
+    masterlessWallet.MasterAccount.child = [];
+  }
 
   defaultMasterKey.name = masterKeyName;
   const wallet = await importWallet(mnemonic, defaultMasterKey.getStorageName());
