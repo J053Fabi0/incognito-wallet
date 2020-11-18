@@ -9,13 +9,16 @@ import { importWallet, saveWallet, storeWalletAccountIdsOnAPI } from '@services/
 import { reloadWallet } from '@src/redux/actions/wallet';
 import { getWalletAccounts } from '@services/api/masterKey';
 // eslint-disable-next-line import/no-cycle
-import { followDefaultTokens, reloadAccountFollowingToken, reloadBalance } from '@src/redux/actions/account';
+import { reloadAccountFollowingToken, reloadBalance } from '@src/redux/actions/account';
 import { pTokensSelector } from '@src/redux/selectors/token';
 import { masterKeysSelector, masterlessKeyChainSelector } from '@src/redux/selectors/masterKey';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import _ from 'lodash';
 import { compareTextLowerCase } from '@utils/compare';
 import { clearAllCaches } from '@services/cache';
+import { tokenSeleclor } from '@src/redux/selectors';
+import accountService from '@services/wallet/accountService';
+import walletType from '@src/redux/types/wallet';
 
 const DEFAULT_MASTER_KEY = new MasterKeyModel({
   name: 'Wallet',
@@ -59,11 +62,35 @@ const initMasterKeySuccess = (data) => ({
   payload: data,
 });
 
-const followDefaultTokenForWallet = (wallet) => async (dispatch, getState) => {
+const followDefaultTokens = async (account, pTokenList, wallet) => {
+  try {
+    const pTokens = pTokenList;
+    const defaultTokens = [];
+    pTokens?.forEach((token) => {
+      if (token.default) {
+        defaultTokens.push(token.convertToToken());
+      }
+    });
+    if (defaultTokens.length > 0) {
+      await accountService.addFollowingTokens(defaultTokens, account, wallet);
+    }
+  } catch (e) {
+    throw e;
+  }
+};
+
+const followDefaultTokenForWallet = (wallet, accounts) => async (dispatch, getState) => {
   const state = getState();
   const pTokens = pTokensSelector(state);
-  for (const account of wallet.MasterAccount.child) {
-    await dispatch(followDefaultTokens(account, pTokens));
+
+  if (!accounts || !accounts.length) {
+    for (const account of wallet.MasterAccount.child) {
+      await followDefaultTokens(account, pTokens, wallet);
+    }
+  } else {
+    for (const account of accounts) {
+      await followDefaultTokens(account, pTokens, wallet);
+    }
   }
 };
 
@@ -145,6 +172,7 @@ export const loadAllMasterKeys = () => async (dispatch) => {
           //
         }
       }
+      await dispatch(followDefaultTokenForWallet(wallet, newAccounts));
       await wallet.save();
     }
   }

@@ -207,7 +207,6 @@ class Transfer extends React.PureComponent {
         this.setState({ sending: true });
         if (token.id !== PRV_ID && feeUnit === PRV?.symbol) {
           prvBalance = await accountService.getBalance(prvAccount, prvAccount.Wallet);
-          prvBalance = await accountService.getBalance(prvAccount, prvAccount.Wallet);
           prvFee = fee;
           if (prvFee > prvBalance) {
             return this.updateTransfer({chainError: MESSAGES.NOT_ENOUGH_NETWORK_FEE});
@@ -261,7 +260,7 @@ class Transfer extends React.PureComponent {
       }
     } else {
       this.updateTransfer({ account }, () => {
-        accountService.getBalance(dexMainAccount, account.Wallet, token.id)
+        accountService.getBalance(dexMainAccount, dexMainAccount.Wallet, token.id)
           .then(balance => {
             this.updateTransfer({ balance });
           });

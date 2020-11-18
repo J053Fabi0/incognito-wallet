@@ -242,7 +242,7 @@ class Pool extends React.Component {
       onAddHistory(newHistory);
       this.setState({ showSuccess: true });
     } catch (error) {
-      Toast.showError(new ExHandler(error).getMessage(MESSAGES.TRADE_ERROR));
+      new ExHandler(error).showErrorToast(true);
     } finally {
       this.setState({ removing: false });
     }

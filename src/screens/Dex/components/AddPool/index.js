@@ -373,7 +373,7 @@ class Pool extends React.Component {
       newHistory.updateTx2(res2);
       this.setState({ showSuccess: true });
     } catch (error) {
-      Toast.showError(new ExHandler(error).getMessage(MESSAGES.TRADE_ERROR));
+      new ExHandler(error).showErrorToast(true);
     } finally {
       if (newHistory) {
         newHistory.status = undefined;
