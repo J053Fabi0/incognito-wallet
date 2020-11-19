@@ -8,11 +8,13 @@ import { ExHandler } from '@services/exception';
 import { isEmpty, some } from 'lodash';
 import accountService from '@services/wallet/accountService';
 import { onClickView } from '@utils/ViewUtil';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateWithdrawTxs } from '@screens/Node/Node.actions';
+import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
 
 const enhanceWithdraw = WrappedComp => props => {
   const dispatch = useDispatch();
+  const listAccount = useSelector(listAllMasterKeyAccounts);
   const { listDevice, noRewards, wallet, withdrawTxs } = props;
 
   const [withdrawing, setWithdrawing] = useState(false);
@@ -36,7 +38,6 @@ const enhanceWithdraw = WrappedComp => props => {
   // Support withdraw VNode | PNode unstaked
   const sendWithdrawTx = async (paymentAddress, tokenIds) => {
     const _withdrawTxs = {};
-    const listAccount = await wallet.listAccount();
     for (const tokenId of tokenIds) {
       const account = listAccount.find(item => item.PaymentAddress === paymentAddress);
       await accountService.createAndSendWithdrawRewardTx(tokenId, account, wallet)

@@ -9,7 +9,6 @@ import tokenService, { PRV } from '@services/wallet/tokenService';
 import { PRV_ID } from '@screens/Dex/constants';
 import { getTokenList } from '@services/api/token';
 import { parseNodeRewardsToArray } from '@screens/Node/utils';
-import accountService from '@services/wallet/accountService';
 
 export const checkIfVerifyCodeIsExisting = async () => {
   return new Promise(async (resolve, reject) => {
@@ -76,9 +75,8 @@ export const getTotalVNodeNotHaveBlsKey = async () => {
 
 // Update Node Info
 // support for VNode and VNode
-export const combineNode = async (device, wallet, newBLSKey) => {
-  const listAccount = await wallet.listAccount();
-  const rawAccount  = await accountService.getAccountWithBLSPubKey(newBLSKey, wallet);
+export const combineNode = async (device, listAccount, newBLSKey) => {
+  const rawAccount  = listAccount.find(item => item.BLSPublicKey === newBLSKey);
   device.Account = listAccount.find(item =>
     item.AccountName === rawAccount?.name
   );
@@ -173,7 +171,7 @@ export const parseRewards = async (nodesInfo, skipAllTokens = false) => {
       allRewards[tokenId] = rewardValue;
     }
   });
-  
+
   const prvRewards = { [PRV_ID]: allRewards[PRV_ID] };
   // Need get AllTokens in get Nodes Info from API, skipAllTokens = false
   if (!skipAllTokens) {
@@ -223,7 +221,7 @@ export const combineNodesInfoToObject = (nodesInfo) => {
 };
 
 // Format Node Info get from API
-export const formatNodeItemFromApi = async (device, listNodeObject, allTokens, wallet) => {
+export const formatNodeItemFromApi = async (device, listNodeObject, allTokens, listAccount) => {
   const nodeItem = listNodeObject[
     device.IsVNode ? device.PublicKeyMining : device.QRCode
   ];
@@ -275,7 +273,7 @@ export const formatNodeItemFromApi = async (device, listNodeObject, allTokens, w
       // IsFundedUnstakedRequestProcessed = true => PNode unstaked
       // IsFundedAutoStake = false =>
       if (device.IsFundedUnstaked && blsKey) {
-        device = await combineNode(device, wallet, blsKey);
+        device = await combineNode(device, listAccount, blsKey);
       }
     }
   }
