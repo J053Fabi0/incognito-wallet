@@ -1,9 +1,6 @@
 import React, { useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
-import Header, { useSearchBox } from '@src/components/Header';
-import { withLayout_2 } from '@src/components/Layout';
+import { useSearchBox } from '@src/components/Header';
 import { useNavigationParam } from 'react-navigation-hooks';
 import { flatMap, groupBy } from 'lodash';
 import includes from 'lodash/includes';
@@ -11,9 +8,10 @@ import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
 import accountService from '@services/wallet/accountService';
 import GroupItem from '@screens/SelectAccount/GroupItem';
 import AccountItem from '@screens/SelectAccount/AccountItem';
-import { styled } from './SelectAccount.styled';
+import MainLayout from '@components/MainLayout/index';
 
-const ListAccount = ({ ignoredAccounts }) => {
+const SelectAccount = () => {
+  const ignoredAccounts = useNavigationParam('ignoredAccounts') || [];
   const listAccount = useSelector(listAllMasterKeyAccounts);
   const [result, keySearch] = useSearchBox({
     data: listAccount,
@@ -39,7 +37,7 @@ const ListAccount = ({ ignoredAccounts }) => {
   }, [result, result.length]);
 
   return (
-    <ScrollView style={styled.scrollview} showsVerticalScrollIndicator={false}>
+    <MainLayout header="Search keychain" canSearch scrollable>
       {groupAccounts.map(item => (
         <GroupItem
           name={item.name}
@@ -49,35 +47,14 @@ const ListAccount = ({ ignoredAccounts }) => {
               key={account?.FullName}
               accountName={account.AccountName}
               PaymentAddress={account.PaymentAddress}
+              PrivateKey={account.PrivateKey}
+              MasterKeyName={account.MasterKeyName}
             />
           ))}
         />
       ))}
-    </ScrollView>
+    </MainLayout>
   );
 };
 
-const SelectAccount = () => {
-  const ignoredAccounts = useNavigationParam('ignoredAccounts') || [];
-  return (
-    <View style={styled.container}>
-      <Header
-        title="Search keychains"
-        titleStyled={styled.titleStyled}
-        canSearch
-      />
-      <ListAccount ignoredAccounts={ignoredAccounts} />
-    </View>
-  );
-};
-
-AccountItem.propTypes = {
-  accountName: PropTypes.string.isRequired,
-  PaymentAddress: PropTypes.string.isRequired,
-};
-
-ListAccount.propTypes = {
-  ignoredAccounts: PropTypes.array.isRequired,
-};
-
-export default withLayout_2(SelectAccount);
+export default SelectAccount;

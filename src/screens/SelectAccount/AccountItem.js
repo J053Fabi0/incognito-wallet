@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -8,16 +8,19 @@ import {
   actionSwitchAccountFetching,
 } from '@src/redux/actions/account';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
-import { defaultAccountNameSelector, switchAccountSelector, } from '@src/redux/selectors/account';
+import { defaultAccount, defaultAccountNameSelector, switchAccountSelector, } from '@src/redux/selectors/account';
 import { Toast, TouchableOpacity } from '@src/components/core';
 import { ExHandler } from '@src/services/exception';
 import debounce from 'lodash/debounce';
 import Util from '@src/utils/Util';
 import { COLORS, FONT } from '@src/styles';
+import { SimpleCheckedIcon } from '@components/Icons';
+import Row from '@components/Row';
+import { switchMasterKey } from '@src/redux/actions/masterKey';
 
 const itemStyled = StyleSheet.create({
   container: {
-    marginLeft: 15,
+    marginLeft: 10,
     marginBottom: 30,
   },
   name: {
@@ -34,17 +37,25 @@ const itemStyled = StyleSheet.create({
     lineHeight: FONT.SIZE.medium + 5,
     color: COLORS.colorGreyBold,
   },
+  icon: {
+    width: 20,
+    height: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
-const AccountItem = ({ accountName, PaymentAddress }) => {
+const AccountItem = ({ accountName, PrivateKey, PaymentAddress, MasterKeyName }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const onSelect = useNavigationParam('onSelect');
-  const defaultAccountName = useSelector(defaultAccountNameSelector);
+  const account = useSelector(defaultAccount);
   const switchingAccount = useSelector(switchAccountSelector);
+
   if (!accountName) {
     return null;
   }
+
   const onSelectAccount = async () => {
     try {
       if (switchingAccount) {
@@ -57,10 +68,11 @@ const AccountItem = ({ accountName, PaymentAddress }) => {
       }
       await Util.delay(0);
       dispatch(actionSwitchAccountFetching());
-      if (accountName === defaultAccountName) {
+      if (PrivateKey === account.PrivateKey) {
         Toast.showInfo(`Your current account is "${accountName}"`);
         return;
       }
+      await dispatch(switchMasterKey(MasterKeyName));
       dispatch(actionSwitchAccount(accountName));
     } catch (e) {
       new ExHandler(
@@ -71,6 +83,7 @@ const AccountItem = ({ accountName, PaymentAddress }) => {
       dispatch(actionSwitchAccountFetched());
     }
   };
+
   const Component = () => (
     <View style={itemStyled.container}>
       <Text style={itemStyled.name} numberOfLines={1}>
@@ -81,19 +94,33 @@ const AccountItem = ({ accountName, PaymentAddress }) => {
       </Text>
     </View>
   );
+
+  const isCurrentAccount = useMemo(() =>
+    PrivateKey === account.PrivateKey,
+  [PrivateKey, account]
+  );
+
   if (!switchingAccount) {
     return (
       <TouchableOpacity onPress={debounce(onSelectAccount, 100)}>
-        <Component />
+        <Row>
+          <View style={itemStyled.icon}>
+            { isCurrentAccount && <SimpleCheckedIcon /> }
+          </View>
+          <Component />
+        </Row>
       </TouchableOpacity>
     );
   }
+
   return <Component />;
 };
 
 AccountItem.propTypes = {
   accountName: PropTypes.string.isRequired,
   PaymentAddress: PropTypes.string.isRequired,
+  PrivateKey: PropTypes.string.isRequired,
+  MasterKeyName: PropTypes.string.isRequired,
 };
 
 export default AccountItem;

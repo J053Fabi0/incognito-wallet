@@ -18,17 +18,21 @@ const MainLayout = ({
   onGoBack,
   contentStyle,
   noHeader,
+  canSearch,
 }) => {
   return (
     <FlexView style={[noPadding && styles.noPaddingStyle]}>
-      {!noHeader && <Header
-        title={header}
-        hideBackButton={hideBackButton}
-        style={noPadding && styles.paddingHeader}
-        rightHeader={rightHeader}
-        customHeaderTitle={customHeaderTitle}
-        onGoBack={onGoBack}
-      />}
+      {!noHeader && (
+        <Header
+          canSearch={canSearch}
+          title={header}
+          hideBackButton={hideBackButton}
+          style={noPadding && styles.paddingHeader}
+          rightHeader={rightHeader}
+          customHeaderTitle={customHeaderTitle}
+          onGoBack={onGoBack}
+        />
+      )}
       {loading ? <LoadingContainer /> :
         scrollable ? (
           <ScrollView
@@ -66,6 +70,7 @@ MainLayout.propTypes = {
   onGoBack: PropTypes.func,
   contentStyle: PropTypes.any,
   noHeader: PropTypes.bool,
+  canSearch: PropTypes.bool,
 };
 
 MainLayout.defaultProps = {
@@ -80,6 +85,7 @@ MainLayout.defaultProps = {
   onGoBack: undefined,
   contentStyle: null,
   noHeader: false,
+  canSearch: false,
 };
 
 export default compose(
