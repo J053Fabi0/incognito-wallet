@@ -11,7 +11,7 @@ import { getWalletAccounts } from '@services/api/masterKey';
 // eslint-disable-next-line import/no-cycle
 import { reloadAccountFollowingToken, reloadBalance } from '@src/redux/actions/account';
 import { pTokensSelector } from '@src/redux/selectors/token';
-import { masterKeysSelector, masterlessKeyChainSelector } from '@src/redux/selectors/masterKey';
+import { masterKeysSelector, masterlessKeyChainSelector, noMasterLessSelector } from '@src/redux/selectors/masterKey';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import _ from 'lodash';
 import { compareTextLowerCase } from '@utils/compare';
@@ -344,7 +344,7 @@ const loadAllMasterKeyAccountsSuccess = (accounts) => ({
 
 export const loadAllMasterKeyAccounts = () => async(dispatch, getState) => {
   const state = getState();
-  const masterKeys = masterKeysSelector(state);
+  const masterKeys = [...noMasterLessSelector(state), masterlessKeyChainSelector(state)];
   let accounts = [];
   for (const masterKey of masterKeys) {
     const masterKeyAccounts = await masterKey.getAccounts(true);

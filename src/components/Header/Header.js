@@ -3,10 +3,9 @@ import { View, Text, BackHandler } from 'react-native';
 import { BtnCircleBack } from '@src/components/Button';
 import PropTypes from 'prop-types';
 import { useFocusEffect, useNavigation } from 'react-navigation-hooks';
-import { BtnSelectAccount } from '@screens/SelectAccount';
 import debounce from 'lodash/debounce';
 import { TouchableOpacity } from '@src/components/core';
-import NavigationService from '@src/services/NavigationService';
+import SelectAccountButton from '@src/components/SelectAccountButton';
 import { styled, styledHeaderTitle } from './Header.styled';
 import SearchBox from './Header.searchBox';
 import withHeader from './Header.enhance';
@@ -131,7 +130,7 @@ const Header = ({
         {!!rightHeader && rightHeader}
         {accountSelectable && (
           <View>
-            <BtnSelectAccount ignoredAccounts={ignoredAccounts} />
+            <SelectAccountButton ignoredAccounts={ignoredAccounts} />
           </View>
         )}
       </View>

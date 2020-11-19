@@ -9,7 +9,8 @@ import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { ButtonBasic } from '@src/components/Button';
 import { actionSwitchAccount } from '@src/redux/actions/account';
-import { listAccountSelector } from '@src/redux/selectors/account';
+import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
+import { switchMasterKey } from '@src/redux/actions/masterKey';
 
 const styled = StyleSheet.create({
   container: {
@@ -36,9 +37,9 @@ const styled = StyleSheet.create({
   },
 });
 
-const BtnSelectAccount = ({ ignoredAccounts }) => {
+const SelectAccountButton = ({ ignoredAccounts }) => {
   const account = useSelector(accountSeleclor.defaultAccountSelector);
-  const accounts = useSelector(listAccountSelector);
+  const accounts = useSelector(listAllMasterKeyAccounts);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const onNavSelectAccount = () =>
@@ -51,6 +52,7 @@ const BtnSelectAccount = ({ ignoredAccounts }) => {
       const accountNames = accounts.map(item => item.accountName);
       const validAccounts = accountNames.filter(name => !ignoredAccounts.includes(name.toLowerCase()));
       if (validAccounts && validAccounts.length) {
+        await dispatch(switchMasterKey(validAccounts[0].MasterKeyName));
         await dispatch(actionSwitchAccount(validAccounts[0]));
       }
     }
@@ -78,12 +80,12 @@ const BtnSelectAccount = ({ ignoredAccounts }) => {
   );
 };
 
-BtnSelectAccount.propTypes = {
+SelectAccountButton.propTypes = {
   ignoredAccounts: PropTypes.array,
 };
 
-BtnSelectAccount.defaultProps = {
+SelectAccountButton.defaultProps = {
   ignoredAccounts: []
 };
 
-export default BtnSelectAccount;
+export default SelectAccountButton;

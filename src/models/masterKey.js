@@ -72,6 +72,7 @@ class MasterKeyModel {
       accountInfo.MasterKey = this;
       accountInfo.FullName = `${this.name}-${accountInfo.AccountName}`;
       accountInfos.push(accountInfo);
+      accountInfo.MasterKeyName = this.name;
     }
 
     return accountInfos;

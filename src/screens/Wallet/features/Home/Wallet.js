@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, RefreshControl } from 'react-native';
 import Header from '@src/components/Header';
-import { BtnSelectAccount } from '@screens/SelectAccount';
 import { ButtonBasic, BtnQRCode, BtnClose } from '@src/components/Button';
 import { tokenSeleclor } from '@src/redux/selectors';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,8 +21,7 @@ import isNaN from 'lodash/isNaN';
 import { BottomBar, ScrollView, TouchableOpacity } from '@src/components/core';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import { useStreamLine } from '@src/screens/Streamline';
-import { BIG_COINS } from '@src/screens/DexV2/constants';
-import { getPrivacyDataByTokenID } from '@src/redux/selectors/selectedPrivacy';
+import SelectAccountButton from '@components/SelectAccountButton';
 import {
   styled,
   styledHook,
@@ -232,7 +230,7 @@ const RightHeader = React.memo(() => {
         style={rightHeaderStyled.btnExportKey}
         onPress={handleExportKey}
       />
-      <BtnSelectAccount />
+      <SelectAccountButton />
     </View>
   );
 });

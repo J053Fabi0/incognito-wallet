@@ -1,102 +1,57 @@
-import React from 'react';
-import { View, ScrollView, Text } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { accountSeleclor } from '@src/redux/selectors';
+import React, { useMemo } from 'react';
+import { ScrollView, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  actionSwitchAccount,
-  actionSwitchAccountFetching,
-  actionSwitchAccountFetched,
-} from '@src/redux/actions/account';
 import Header, { useSearchBox } from '@src/components/Header';
 import { withLayout_2 } from '@src/components/Layout';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
-import {
-  defaultAccountNameSelector,
-  switchAccountSelector,
-} from '@src/redux/selectors/account';
-import { Toast, TouchableOpacity } from '@src/components/core';
-import { ExHandler } from '@src/services/exception';
+import { useNavigationParam } from 'react-navigation-hooks';
+import { flatMap, groupBy } from 'lodash';
 import includes from 'lodash/includes';
-import debounce from 'lodash/debounce';
-import Util from '@src/utils/Util';
-import { styled, itemStyled } from './SelectAccount.styled';
-
-const AccountItem = ({ accountName, PaymentAddress }) => {
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const onSelect = useNavigationParam('onSelect');
-  const defaultAccountName = useSelector(defaultAccountNameSelector);
-  const switchingAccount = useSelector(switchAccountSelector);
-  if (!accountName) {
-    return null;
-  }
-  const onSelectAccount = async () => {
-    try {
-      if (switchingAccount) {
-        return;
-      }
-      if (!onSelect) {
-        navigation.goBack();
-      } else {
-        onSelect();
-      }
-      await Util.delay(0);
-      dispatch(actionSwitchAccountFetching());
-      if (accountName === defaultAccountName) {
-        Toast.showInfo(`Your current account is "${accountName}"`);
-        return;
-      }
-      dispatch(actionSwitchAccount(accountName));
-    } catch (e) {
-      new ExHandler(
-        e,
-        `Can not switch to account "${accountName}", please try again.`,
-      ).showErrorToast();
-    } finally {
-      dispatch(actionSwitchAccountFetched());
-    }
-  };
-  const Component = () => (
-    <View style={itemStyled.container}>
-      <Text style={itemStyled.name} numberOfLines={1}>
-        {accountName}
-      </Text>
-      <Text style={itemStyled.address} numberOfLines={1} ellipsizeMode="middle">
-        {PaymentAddress}
-      </Text>
-    </View>
-  );
-  if (!switchingAccount) {
-    return (
-      <TouchableOpacity onPress={debounce(onSelectAccount, 100)}>
-        <Component />
-      </TouchableOpacity>
-    );
-  }
-  return <Component />;
-};
+import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
+import accountService from '@services/wallet/accountService';
+import GroupItem from '@screens/SelectAccount/GroupItem';
+import AccountItem from '@screens/SelectAccount/AccountItem';
+import { styled } from './SelectAccount.styled';
 
 const ListAccount = ({ ignoredAccounts }) => {
-  const listAccount = useSelector(accountSeleclor.listAccountSelector);
+  const listAccount = useSelector(listAllMasterKeyAccounts);
   const [result, keySearch] = useSearchBox({
     data: listAccount,
     handleFilter: () => [
       ...listAccount.filter(
         (account) =>
-          !(
-            ignoredAccounts.includes(account?.name.toLowerCase()) ||
-            ignoredAccounts.includes(account?.accountName.toLowerCase())
-          ) &&
-          (includes(account?.accountName.toLowerCase(), keySearch) ||
-            includes(account?.name.toLowerCase(), keySearch)),
+          !ignoredAccounts.includes(accountService.getAccountName(account).toLowerCase()) &&
+          includes(accountService.getAccountName(account).toLowerCase(), keySearch),
       ),
     ],
   });
+
+  const groupAccounts = useMemo(() => {
+    if (result && result.length > 0) {
+      const groupedMasterKeys = groupBy(result, item => item.MasterKeyName);
+      return flatMap(groupedMasterKeys, (child, key) => ({
+        name: key,
+        child,
+      }));
+    }
+
+    return [];
+  }, [result, result.length]);
+
   return (
     <ScrollView style={styled.scrollview} showsVerticalScrollIndicator={false}>
-      {result.map((item) => (
-        <AccountItem key={item?.accountName} {...item} />
+      {groupAccounts.map(item => (
+        <GroupItem
+          name={item.name}
+          key={item.name}
+          child={item.child.map((account) => (
+            <AccountItem
+              key={account?.FullName}
+              accountName={account.AccountName}
+              PaymentAddress={account.PaymentAddress}
+            />
+          ))}
+        />
       ))}
     </ScrollView>
   );
