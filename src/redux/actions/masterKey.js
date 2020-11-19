@@ -14,11 +14,8 @@ import { pTokensSelector } from '@src/redux/selectors/token';
 import { masterKeysSelector, masterlessKeyChainSelector, noMasterLessSelector } from '@src/redux/selectors/masterKey';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import _ from 'lodash';
-import { compareTextLowerCase } from '@utils/compare';
 import { clearAllCaches } from '@services/cache';
-import { tokenSeleclor } from '@src/redux/selectors';
 import accountService from '@services/wallet/accountService';
-import walletType from '@src/redux/types/wallet';
 
 const DEFAULT_MASTER_KEY = new MasterKeyModel({
   name: 'Wallet',
@@ -165,14 +162,16 @@ export const loadAllMasterKeys = () => async (dispatch) => {
       );
 
     if (newAccounts.length > 0) {
+      const newCreatedAccounts = [];
       for (const account of newAccounts) {
         try {
-          await wallet.importAccountWithId(account.id, account.name);
+          const newAccount = await wallet.importAccountWithId(account.id, account.name);
+          newCreatedAccounts.push(newAccount);
         } catch {
           //
         }
       }
-      await dispatch(followDefaultTokenForWallet(wallet, newAccounts));
+      await dispatch(followDefaultTokenForWallet(wallet, newCreatedAccounts));
       await wallet.save();
     }
   }
@@ -251,12 +250,14 @@ const syncUnlinkWithNewMasterKey = (newMasterKey) => async (dispatch, getState) 
   const wallet = newMasterKey.wallet;
 
   for (const account of accounts) {
+    const findItemWithKey = (item) => item.getPrivateKey() === account.PrivateKey;
+
     const isCreated = await wallet.hasCreatedAccount(account.PrivateKey);
     if (isCreated) {
-      const masterAccountIndex = wallet.MasterAccount.child.findIndex(item => compareTextLowerCase(item.name, account.AccountName));
-      const masterlessAccount = masterLessWallet.MasterAccount.child.find(item => compareTextLowerCase(item.name, account.AccountName));
+      const masterAccountIndex = wallet.MasterAccount.child.findIndex(findItemWithKey);
+      const masterlessAccount = masterLessWallet.MasterAccount.child.find(findItemWithKey);
 
-      masterLessWallet.MasterAccount.child = masterLessWallet.MasterAccount.child.filter(item => !compareTextLowerCase(item.name, account.AccountName));
+      masterLessWallet.MasterAccount.child = masterLessWallet.MasterAccount.child.filter(item => !findItemWithKey(item));
 
       if (masterAccountIndex > -1) {
         const masterAccount = wallet.MasterAccount.child[masterAccountIndex];
@@ -267,8 +268,8 @@ const syncUnlinkWithNewMasterKey = (newMasterKey) => async (dispatch, getState) 
       }
 
       // Found duplicate account name
-      if (wallet.MasterAccount.child.filter(item => compareTextLowerCase(item.name, account.AccountName)).length > 1) {
-        const isDuplicatedNameAccount = wallet.MasterAccount.child.find(item => compareTextLowerCase(item.name, account.AccountName));
+      if (wallet.MasterAccount.child.filter(findItemWithKey).length > 1) {
+        const isDuplicatedNameAccount = wallet.MasterAccount.child.find(findItemWithKey);
         if (isDuplicatedNameAccount) {
           let index = 1;
           let newName = isDuplicatedNameAccount.name + index;
